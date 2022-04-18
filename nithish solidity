@@ -1,0 +1,37 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+contract TodoList {
+
+    struct Todo {
+        bytes32 content;
+        address owner;
+        bool isCompleted;
+        uint256 timestamp;
+    }
+    uint256 public constant maxAmountOfTodos = 100;
+
+    //owner => todos
+    // mapping(address => Todo) public todos;
+  // todoId => Todo
+  mapping(uint256 => Todo) public getTodosById;
+    //owner => last todo id
+    mapping(address => uint256) public lastIds; 
+    
+    //add a todo to the list
+  function addTodo(bytes32 _content) public { 
+      Todo memory myNote = Todo({content: _content,owner: msg.sender,isCompleted: false, timestamp: block.timestamp});
+        // todos[msg.sender] = myNote;
+      if(lastIds[msg.sender] >= maxAmountOfTodos) lastIds[msg.sender] = 0;
+      else lastIds[msg.sender]++;
+      getTodosById[lastIds[msg.sender]] = myNote;
+  }
+
+    function markTodoAsCompleted(uint256 _todoId) public
+    {
+        // require (_todoId < maxAmountOfTodos);
+        // require(!todos[msg.sender][_todoId].isCompleted);
+        // todos[msg.sender][_todoId].isCompleted = true;
+    require(msg.sender == getTodosById[_todoId].owner, "only owner");
+    getTodosById[_todoId].isCompleted = true;
+    }
+}
